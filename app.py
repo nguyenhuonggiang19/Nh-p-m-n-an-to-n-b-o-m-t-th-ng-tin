@@ -108,69 +108,6 @@ def laIpNguyHiem(ip, hoTen, email, tenFile, kichThuocFile, danhSachLog):
         return True
     return False
 
-# Route: Trang chủ và xử lý khi người dùng gửi CV
-# @app.route("/", methods=["GET", "POST"])
-# def xuLy():
-#     if request.method == "GET":
-#         return render_template("giaodien.html")
-
-#     hoTen = request.form["name"]
-#     email = request.form["email"]
-#     file = request.files["cvfile"]
-#     ip = request.remote_addr
-#     filename = file.filename
-#     filepath = os.path.join(THU_MUC_TAI, filename)
-#     file.save(filepath)
-#     fileSize = os.path.getsize(filepath)
-#     nowStr = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-#     danhSachLog = []
-#     if os.path.exists(FILE_LOG):
-#         with open(FILE_LOG, "r", encoding="utf-8") as f:
-#             danhSachLog = json.load(f)
-
-#     if laIpNguyHiem(ip, hoTen, email, filename, fileSize, danhSachLog):
-#         return render_template("giaodien.html", result={
-#             "ip": ip,
-#             "ip_status": "❌ IP bị từ chối",
-#             "filename": filename,
-#             "file_status": "Bị chặn do nghi ngờ",
-#             "hash": "---",
-#             "sign_status": "Không thực hiện",
-#             "encrypt_status": "Không thực hiện",
-#             "log_status": "Không ghi log"
-#         })
-
-#     with open(filepath, "rb") as f:
-#         noiDungFile = f.read()
-#     khoaAES, iv, ciphertext = maHoaAES_CBC(noiDungFile)
-#     hash_du_lieu = tinhHashSHA512(iv + ciphertext)
-#     private_key, public_key = taiHoacTaoKhoa()
-#     metadata = f"{filename}|{nowStr}|{ip}"
-#     chuKy = kySo(metadata, private_key)
-#     fileEncPath = os.path.join(THU_MUC_MA_HOA, f"enc_{filename}")
-#     with open(fileEncPath, "wb") as f:
-#         f.write(iv + ciphertext)
-
-#     danhSachLog.append({
-#         "ip": ip, "name": hoTen, "email": email, "file": filename,
-#         "time": nowStr, "hash": hash_du_lieu,
-#         "chuky": b64encode(chuKy).decode()
-#     })
-#     with open(FILE_LOG, "w", encoding="utf-8") as f:
-#         json.dump(danhSachLog, f, indent=2, ensure_ascii=False)
-
-#     return render_template("giaodien.html", result={
-#         "ip": ip,
-#         "ip_status": "✅ Hợp lệ",
-#         "filename": filename,
-#         "file_status": "Hợp lệ & đã xử lý",
-#         "hash": hash_du_lieu,
-#         "sign_status": "✅ Đã ký SHA-512",
-#         "encrypt_status": "✅ AES thành công",
-#         "log_status": "✅ Ghi log"
-#     })
-
 @app.route("/", methods=["GET", "POST"])
 def xuLy():
     if request.method == "GET":
