@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Chi tiết CV</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-10">
+  <h1 class="text-2xl font-bold mb-6 text-cyan-400">Chi tiết CV</h1>
+
+  <div class="bg-gray-800 p-6 rounded shadow-lg max-w-3xl mx-auto">
+    <p><strong>Họ tên:</strong> {{ cv.name }}</p>
+    <p><strong>Email:</strong> {{ cv.email }}</p>
+    <p><strong>IP gửi:</strong> {{ cv.ip }}</p>
+    <p><strong>Thời gian:</strong> {{ cv.time }}</p>
+    <p><strong>Tên file:</strong> {{ cv.file }}</p>
+    <p><strong>Hash SHA-512:</strong> <span class="break-all">{{ cv.hash }}</span></p>
+    <p><strong>Chữ ký SHA-512:</strong></p>
+    <textarea readonly rows="6" class="w-full p-2 mt-2 text-black rounded">{{ cv.chuky }}</textarea>
+
+    <div class="mt-6">
+      <a href="/uploads/{{ cv.file }}" target="_blank" class="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded">Xem file PDF</a>
+      <a href="/admin" class="ml-4 text-gray-400 hover:text-white underline">← Quay lại</a>
+    </div>
+  </div>
+</body>
+</html>

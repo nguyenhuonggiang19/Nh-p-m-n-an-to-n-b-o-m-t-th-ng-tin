@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Gửi CV an toàn</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #2d3035;
+      color: #080707;
+    }
+    input, select {
+      color: black;
+    }
+    .hash-preview {
+      display: inline-block;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .hash-expanded {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <header class="bg-gray-900 px-10 py-5 flex justify-between items-center">
+    <div class="text-cyan-400 text-2xl font-bold">CV-SCAN</div>
+    <nav class="flex items-center gap-6">
+      <a href="#" class="text-gray-400 hover:text-white text-sm">Về chúng tôi</a>
+      <a href="#" class="text-gray-400 hover:text-white text-sm">API</a>
+      <button onclick="openLoginModal()" class="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded text-white font-bold text-sm">Đăng nhập</button>
+    </nav>
+  </header>
+
+  <div class="upload-container max-w-xl mx-auto mt-16 bg-gray-800 p-10 rounded-lg shadow-md text-center">
+    <h2 class="text-2xl text-white font-semibold mb-6">Gửi CV để kiểm tra an toàn</h2>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+      <input type="text" name="name" placeholder="Họ tên" required class="w-4/5 p-2 mb-4 rounded">
+      <input type="email" name="email" placeholder="Email" required class="w-4/5 p-2 mb-4 rounded">
+      <input type="file" name="cvfile" accept=".pdf" required class="w-4/5 p-2 mb-4 rounded bg-white">
+      <button type="submit" class="mt-4 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded text-white">Gửi CV</button>
+    </form>
+
+    {% if result %}
+    <div class="result bg-gray-700 p-6 mt-10 rounded text-left border-l-4 {% if '❌' in result.ip_status %}border-red-500{% else %}border-green-500{% endif %}">
+      <h3 class="text-lg font-bold mb-4 text-white">
+        {% if '❌' in result.ip_status %}
+          🚫 Gửi CV không thành công
+        {% else %}
+          ✅ Gửi CV thành công
+        {% endif %}
+      </h3>
+      <ul class="list-none text-white text-sm leading-6">
+        <li><strong>Địa chỉ IP:</strong> {{ result.ip }} <span class="ml-2">{{ result.ip_status }}</span></li>
+        <li><strong>Tên file:</strong> {{ result.filename }}</li>
+        <li><strong>Trạng thái file:</strong> {{ result.file_status }}</li>
+        <li><strong>Mã SHA-512:</strong> 
+          <span class="hash-preview cursor-pointer text-cyan-300" onclick="toggleHash(this)">
+            {{ result.hash }}
+          </span>
+        </li>
+        <li><strong>Trạng thái ký số:</strong> {{ result.sign_status }}</li>
+        <li><strong>Trạng thái mã hóa:</strong> {{ result.encrypt_status }}</li>
+        <li><strong>Ghi log:</strong> {{ result.log_status }}</li>
+      </ul>
+      {% if '❌' in result.ip_status %}
+        <div class="mt-4 bg-red-600 text-white p-3 rounded text-sm font-semibold">
+          Hệ thống đã từ chối yêu cầu do nghi ngờ hoạt động bất thường từ IP này. 
+          Vui lòng kiểm tra lại thông tin hoặc thử lại sau vài phút.
+        </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50">
+    <div class="bg-gray-800 p-8 rounded-lg w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4 text-center text-white">Đăng nhập (Admin)</h2>
+      <input id="username" type="text" placeholder="Tên đăng nhập" class="w-full mb-3 p-2 rounded">
+      <input id="password" type="password" placeholder="Mật khẩu" class="w-full mb-3 p-2 rounded">
+      <div class="flex justify-between mt-4">
+        <button onclick="handleLogin()" class="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded text-white">Đăng nhập</button>
+        <button onclick="closeLoginModal()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-white">Hủy</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center mt-20 text-gray-400 text-sm py-4">
+    © 2025 CV-SCAN | Liên hệ | Điều khoản dịch vụ
+  </footer>
+
+  <script>
+    function openLoginModal() {
+      document.getElementById('loginModal').classList.remove('hidden');
+    }
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.add('hidden');
+    }
+    function handleLogin() {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+
+      fetch('/admin-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: user, password: pass })
+      })
+      .then(response => {
+        if (response.redirected) {
+      // Nếu server trả về redirect → đi tới trang admin
+          window.location.href = response.url;
+        } else {
+          return response.text();
+        }
+       })
+      .then(text => {
+        if (text && text.includes("Sai tài khoản")) {
+          alert("Sai thông tin đăng nhập!");
+        }
+      })
+      .catch(error => {
+        console.error('Lỗi:', error);
+        alert("Đăng nhập thất bại!");
+      });
+    }
+    function toggleHash(element) {
+      element.classList.toggle('hash-expanded');
+    }
+  </script>
+</body>
+</html>

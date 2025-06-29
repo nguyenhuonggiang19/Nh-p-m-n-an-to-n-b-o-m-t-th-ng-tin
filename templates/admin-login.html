@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng nhập Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white flex justify-center items-center h-screen">
+
+  <div class="bg-gray-800 p-10 rounded-lg shadow-md w-full max-w-sm">
+    <h2 class="text-xl font-bold mb-6 text-center text-cyan-400">Đăng nhập Quản trị</h2>
+    
+    {% if error %}
+      <div class="bg-red-500 text-white p-2 rounded text-center mb-4">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <form method="POST" action="/admin-login">
+      <label class="block mb-2">Tên đăng nhập:</label>
+      <input name="username" type="text" class="w-full mb-4 p-2 rounded text-black" required>
+
+      <label class="block mb-2">Mật khẩu:</label>
+      <input name="password" type="password" class="w-full mb-6 p-2 rounded text-black" required>
+
+      <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 py-2 rounded text-white font-bold">Đăng nhập</button>
+    </form>
+  </div>
+
+</body>
+</html>
